@@ -1,3 +1,9 @@
+(*
+Get 401k Prices (JPMorgan & Putnam)
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property TransmissionLib : LibLoader's loadScript("Libraries:Transmission.applescript")
 property GrowlLib : LibLoader's loadScript("Libraries:Growl.applescript")
@@ -21,8 +27,8 @@ delay 5
 --set sgContribution to my Get401kContribution()
 
 set outMessage to "401k Prices
-JPMorgan SmartRetire 2050 (RBS)	â€“ " & rbsPrice & "
-Target Date 2050 Fund (JPM)		â€“ " & jpmPrice & "
+JPMorgan SmartRetire 2050 (RBS)	Ð " & rbsPrice & "
+Target Date 2050 Fund (JPM)		Ð " & jpmPrice & "
 
 SG Contribution
 " -- & sgContribution

@@ -1,12 +1,18 @@
+(*
+Move tasks from Things to OmniFocus
+v1.0
+Dov Frankel, 2013
+*)
+
 tell application "Things.app"
-	set theArea to Â«class tslsÂ» named "TV Shows"
-	set theToDos to every Â«class tstkÂ» in theArea
+	set theArea to Çclass tslsÈ named "TV Shows"
+	set theToDos to every Çclass tstkÈ in theArea
 end tell
 
 repeat with thingsToDo in theToDos
 	tell application "Things.app"
 		set theName to name of thingsToDo
-		set theTags to Â«class tnamÂ» of thingsToDo
+		set theTags to Çclass tnamÈ of thingsToDo
 	end tell
 	
 	tell application "OmniFocus"

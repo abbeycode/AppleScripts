@@ -1,3 +1,9 @@
+(*
+Rename Illustrator Exports
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property GrowlLib : LibLoader's loadScript("Libraries:Growl.applescript")
 
@@ -8,7 +14,7 @@ on hazelProcessFile(theFile)
 	try
 		set thePath to POSIX path of theFile
 		
-		set targetFileName to ((characters 1 through -10 of thePath) & Â¬
+		set targetFileName to ((characters 1 through -10 of thePath) & Â
 			(characters -4 through -1 of thePath)) as text
 		
 		set command to "mv " & quoted form of thePath & " " & quoted form of targetFileName

@@ -1,3 +1,9 @@
+(*
+Tumblr - New Movie Writeup
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property SafariLib : LibLoader's loadScript("Libraries:Safari.applescript")
 property StringsLib : LibLoader's loadScript("Libraries:Strings.applescript")
@@ -12,7 +18,7 @@ if not isDebugging then
 	set selected_text to (the clipboard as text)
 	
 	set default_answer to ""
-	if selected_text â‰  "" then set default_answer to selected_text
+	if selected_text ­ "" then set default_answer to selected_text
 	
 	try
 		set theResult to display dialog "Movie title?" default answer (default_answer as text)
@@ -37,10 +43,10 @@ tell application "Safari"
 	set movieTitle to StringsLib's replace_text(movieTitle, "'", "\\'")
 	
 	set titleToken to "<???>"
-	set theUrls to {Â¬
-		"http://www.imdb.com/find?q=" & titleToken & "&s=tt", Â¬
-		"http://www.amazon.com/s/url=search-alias%3Dmovies-tv&field-keywords=" & titleToken, Â¬
-		"http://www.themoviedb.org/search?search=" & titleToken Â¬
+	set theUrls to {Â
+		"http://www.imdb.com/find?q=" & titleToken & "&s=tt", Â
+		"http://www.amazon.com/s/url=search-alias%3Dmovies-tv&field-keywords=" & titleToken, Â
+		"http://www.themoviedb.org/search?search=" & titleToken Â
 		}
 	
 	-- Open other tabs
@@ -104,7 +110,7 @@ on getTemplateContents(templateFileName)
 			set theBody to value of XML element "body"
 			set theTags to value of XML element "tags"
 			
-			set fixLinesScript to Â¬
+			set fixLinesScript to Â
 				"
 import sys
 for line in sys.stdin.readlines():

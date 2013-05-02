@@ -1,3 +1,9 @@
+(*
+Load Torrent
+v1.0
+Dov Frankel, 2013
+*)
+
 property startWhenAdded : false
 property targetGroup : "Test"
 
@@ -20,7 +26,7 @@ on hazelProcessFile(theFile)
 			set startChecked to (get value of checkbox "Start when added" of openDialogWindow) as boolean
 			
 			-- If app and script don't agree, toggle the checkbox
-			if startChecked â‰  startWhenAdded then
+			if startChecked ­ startWhenAdded then
 				click checkbox "Start when added" of openDialogWindow
 			end if
 			

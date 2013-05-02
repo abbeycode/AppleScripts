@@ -3,7 +3,7 @@ Library Loader
 v1.0
 Dov Frankel, 2013
 
-loadScript() handler originally from http://codemunki.com
+Original loadScript() handler from http://codemunki.com
 
 
 *** Instructions ***

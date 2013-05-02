@@ -1,3 +1,9 @@
+(*
+Sync iTunes Devices
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property GrowlLib : LibLoader's loadScript("Libraries:Growl.applescript")
 property StringsLib : LibLoader's loadScript("Libraries:Strings.applescript")
@@ -45,4 +51,4 @@ end tell
 -- tell iTunesLib to SelectSource("Music")
 
 tell GrowlLib to NotifyNonsticky("Synced " & StringsLib's Pluralize(iPodsSynced, "iPod", "iPods"))
--- & ", " & StringsLib's Pluralize(appleTVsSynced, "ï£¿tv", "ï£¿tv's"))
+-- & ", " & StringsLib's Pluralize(appleTVsSynced, "ðtv", "ðtv's"))

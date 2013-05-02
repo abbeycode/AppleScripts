@@ -13,7 +13,7 @@ Many scripts use libraries I've written for certain common functions. Those are 
     property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
     property StringsLib : LibLoader's loadScript("Libraries:Strings.applescript")
 
-The first line creates a reference to the library responsible for loading the other ones. That script has to be a compiled scripts (with the `.scpt` extension), whereas all other scripts are in the plaintext `.applescript` format. I've committed the `Library Loader` script in both formats, so the plain-text version can be searched and diff'ed, but the compiled version can be loaded as a property.
+The first line creates a reference to the library responsible for loading the other ones. That script has to be a compiled scripts (with the `.scpt` extension), whereas all other scripts are in the plaintext `.applescript` format. I've committed the `Library Loader` script in both formats, so the plain-text version can be searched and diff'ed, but the compiled version can be loaded as a property. Each library script contains a comment at the top of the file, which can be copied and pasted into a script that wishes to refer to it.
 
 Any scripts loaded with `Library Loader` can be compiled or plain-text, but plain-text ones must be encoded as UTF-8, since that's what it is expecting when decoding them.
 

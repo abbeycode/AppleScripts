@@ -1,3 +1,9 @@
+(*
+Library Tests
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property TransmissionLib : LibLoader's loadScript("Libraries:Transmission.applescript")
 property FilenamesLib : LibLoader's loadScript("Libraries:Filenames.applescript")
@@ -125,12 +131,12 @@ on TestStrings()
 	end repeat
 	
 	-- Test Trim
-	set whiteSpaceChars to {Â
-		" " as text, Â
-		tab as text, Â
-		(ASCII character 10) as text, Â
-		return as text, Â
-		(ASCII character 0) as text, Â
+	set whiteSpaceChars to {Â¬
+		" " as text, Â¬
+		tab as text, Â¬
+		(ASCII character 10) as text, Â¬
+		return as text, Â¬
+		(ASCII character 0) as text, Â¬
 		""}
 	
 	repeat with firstLeadingSpace in whiteSpaceChars
@@ -209,15 +215,15 @@ on TestDates()
 	set actual to DatesLib's timeOfCurrentDate(testTime)
 	my testExpectedActual(expected, actual)
 	
-	set dateMatchData to {Â
-		{date ("12/1/10"), date ("12/1/10"), true}, Â
-		{date ("12/1/10"), date ("12/2/10"), false}, Â
-		{date ("12/2/10"), date ("12/1/10"), false}, Â
-		{date ("12/1/10 12:00am"), date ("12/1/10 1:00am"), true}, Â
-		{date ("12/1/10 12:00am"), date ("12/2/10 12:00am"), false}, Â
-		{date ("12/1/10"), missing value, false}, Â
-		{missing value, date ("12/1/10"), false}, Â
-		{missing value, missing value, true} Â
+	set dateMatchData to {Â¬
+		{date ("12/1/10"), date ("12/1/10"), true}, Â¬
+		{date ("12/1/10"), date ("12/2/10"), false}, Â¬
+		{date ("12/2/10"), date ("12/1/10"), false}, Â¬
+		{date ("12/1/10 12:00am"), date ("12/1/10 1:00am"), true}, Â¬
+		{date ("12/1/10 12:00am"), date ("12/2/10 12:00am"), false}, Â¬
+		{date ("12/1/10"), missing value, false}, Â¬
+		{missing value, date ("12/1/10"), false}, Â¬
+		{missing value, missing value, true} Â¬
 			}
 	repeat with TestDates in dateMatchData
 		set LeftDate to item 1 of TestDates

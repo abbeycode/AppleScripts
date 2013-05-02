@@ -1,3 +1,9 @@
+(*
+Create OmniFocus Tasks for iCal events
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property GrowlLib : LibLoader's loadScript("Libraries:Growl.applescript")
 property DatesLib : LibLoader's loadScript("Libraries:Dates.applescript")
@@ -37,7 +43,7 @@ repeat with theCalendarName in theCalendarNames
 	set paragraphNum to 1
 	
 	-- Loop through each paragraph
-	repeat while paragraphNum â‰¤ paragraphCount
+	repeat while paragraphNum ² paragraphCount
 		repeat 1 times --Fake loop, to allow simulated "continue"
 			
 			-- The first line is always the event's summary (name)
@@ -52,7 +58,7 @@ repeat with theCalendarName in theCalendarNames
 			set paragraphNum to paragraphNum + 1
 			
 			-- Find any additional attributes. If there's another paragraph and it begins with a space, then it's a property of the current event
-			repeat while paragraphNum â‰¤ paragraphCount and paragraph paragraphNum of theEventList starts with " "
+			repeat while paragraphNum ² paragraphCount and paragraph paragraphNum of theEventList starts with " "
 				-- Get text of property paragraph, trimming whitespace on both ends
 				set nextParagraph to StringsLib's trim(paragraph paragraphNum of theEventList)
 				

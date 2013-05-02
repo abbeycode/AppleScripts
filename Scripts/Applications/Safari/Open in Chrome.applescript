@@ -1,3 +1,9 @@
+(*
+Safari Open in Chrome
+v1.0
+Dov Frankel, 2013
+*)
+
 -- Get URL from Safari
 tell application "Safari"
 	set safariURL to URL of front document
@@ -15,7 +21,7 @@ tell application "Google Chrome"
 	set theTab to active tab of theWindow
 	
 	-- If that window isn't pointing to your home page, then open a new tab
-	if theTab's URL â‰  "http://www.google.com/" and theTab's URL â‰  "chrome://newtab/" then
+	if theTab's URL ­ "http://www.google.com/" and theTab's URL ­ "chrome://newtab/" then
 		tell theWindow to make new tab
 		set theTab to active tab of theWindow
 	end if

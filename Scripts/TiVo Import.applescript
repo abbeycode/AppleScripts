@@ -1,3 +1,9 @@
+(*
+TiVo Import
+v1.0
+Dov Frankel, 2013
+*)
+
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
 property StringsLib : LibLoader's loadScript("Libraries:Strings.applescript")
 property GrowlLib : LibLoader's loadScript("Libraries:Growl.applescript")
@@ -49,8 +55,8 @@ on hazelProcessFile(theFile)
 		set convertedPath to convertedDir & "/" & convertedFile
 		
 		-- Convert the MPEG file using Handbrake
-		set handbrakeCommand to "/Applications/HandBrakeCLI -i " & quoted form of mpgPath Â¬
-			& " -o " & quoted form of convertedPath Â¬
+		set handbrakeCommand to "/Applications/HandBrakeCLI -i " & quoted form of mpgPath Â
+			& " -o " & quoted form of convertedPath Â
 			& " --preset='AppleTV 2'"
 		--log handbrakeCommand
 		do shell script handbrakeCommand
