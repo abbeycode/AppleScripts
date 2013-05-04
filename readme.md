@@ -21,6 +21,10 @@ Any scripts loaded with `Library Loader` can be compiled or plain-text, but plai
 
 I've got a basic suite of custom-built tests in `Scripts/Libraries/Library Tests.applescript`, which you can run, and observe its log output for failures. I plan to someday move it to [ASUnit](http://nirs.freeshell.org/asunit/) instead.
 
+# iTunes Script Menu
+
+Some iTunes scripts don't work from the Script Menu at all, such as [Re-import Lossless Tracks.applescript](https://github.com/abbeycode/AppleScripts/blob/master/iTunes/Scripts/Re-import%20Lossless%20Tracks.applescript), and others, such as [Upgrade Tracks.applescript](https://github.com/abbeycode/AppleScripts/blob/master/iTunes/Scripts/Upgrade%20Tracks.applescript) need to be compiled into `.scpt` format to work.
+
 # Disclaimer
 
 These scripts work for me, and I hope they will either work for you as-is, or at least lead you to a workable solution. Please review the scripts before you attempt to run them. I can't guarantee they don't have weird side effects I haven't encountered yet. If you do find issues, though, please send me a pull request and I'll try to incorporate any fixes you come up with.

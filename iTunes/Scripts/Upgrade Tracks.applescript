@@ -3,7 +3,8 @@ Upgrade Tracks
 By Dov Frankel
 *)
 
-property DatesLib : (load script POSIX file "/Users/Dov/Library/Scripts/Libraries/Dates.scpt")
+property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
+property DatesLib : LibLoader's loadScript("Libraries:Dates.applescript")
 
 
 
@@ -19,170 +20,11 @@ property pngType : {".png", "PNG"}
 property copy_tags : false
 property my_tags : my_tags_to_clone
 
-------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------- Get the song selection, and quit if it's empty ---------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-
-tell application "iTunes"
-	if selection is not {} then
-		copy selection as list to selectedNewTracks
-		set songs_selected to (number of items in selectedNewTracks) as number
-		
-		set old_fi to fixed indexing
-		set fixed indexing to true
-		copy selection as list to selectedNewTracks
-	else -- Selection is empty
-		display dialog "There are no tracks selected. Please select the new tracks you wish to replace." buttons {"Cancel"} default button 1 with icon 0
-		return "No tracks selected"
-	end if
-end tell
-
-------------------------------------------------------------------------------------------------------------------------------------
--------------------------------- Prompt whether to Replace, Clone & Replace, or Cancel ---------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-
-set prompt_message to "Replace older track with newer (selected) tracks?
-			
-Clone & Replace will copy the tags from the old songs onto the new songs."
-
-tell application "iTunes"
-	set choice to button returned of (display dialog prompt_message buttons {"Cancel", "Clone & Replace", "Replace"} default button 3 with icon 1)
-	set cloneAndReplace to choice = "Clone & Replace"
-end tell
-
-------------------------------------------------------------------------------------------------------------------------------------
------------------------------ Loop through each song, performing the appropriate actions ------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-
-repeat with newTrack in selectedNewTracks
-	--Set newTrack to the main library's copy so it gets deleted from the whole library later on
-	tell application "iTunes" to set newTrack to first item of (tracks whose database ID = newTrack's database ID as integer)
-	
-	log "Finding old track"
-	set oldTrack to my FindOldTrack(newTrack)
-	log "Old track found"
-	
-	if oldTrack â‰  null then
-		------------------------------------------------------------------------------------------------------------------------------------
-		--------------------------------------------------- If Clone, copy tags over ----------------------------------------------------
-		------------------------------------------------------------------------------------------------------------------------------------
-		
-		if cloneAndReplace then
-			log "Starting Cloning"
-			set clone_success to my CloneTracks(oldTrack, newTrack)
-			
-			if not clone_success then
-				return "Clone Cancelled"
-			end if
-			
-			log "Finished Cloning"
-		end if
-		
-		------------------------------------------------------------------------------------------------------------------------------------
-		--------------------------------------------------- Merge Soundtrack Info ----------------------------------------------------
-		------------------------------------------------------------------------------------------------------------------------------------
-		
-		log "Merging soundtrack info"
-		my MergeSoundtrackInfo(oldTrack, newTrack)
-		log "Soundtrack info merged"
-		
-		------------------------------------------------------------------------------------------------------------------------------------
-		------------------------------------------------------- Merge Play Count -------------------------------------------------------
-		------------------------------------------------------------------------------------------------------------------------------------
-		
-		log "Merging play count"
-		my MergePlayCount(oldTrack, newTrack)
-		log "Play count merged"
-		
-		------------------------------------------------------------------------------------------------------------------------------------
-		-------------------------------------------- Get old file's location and delete file --------------------------------------------
-		------------------------------------------------------------------------------------------------------------------------------------
-		
-		tell application "iTunes"
-			set oldLocation to oldTrack's location
-			set oldPath to POSIX path of (oldLocation as text)
-			set oldDatabaseId to oldTrack's database ID as integer
-			log "Deleting " & oldPath
-			do shell script "rm -f " & quoted form of oldPath
-			log "Old file deleted"
-			
-			------------------------------------------------------------------------------------------------------------------------------------
-			------------------------------------ Store new file's location and remove from library -------------------------------------
-			------------------------------------------------------------------------------------------------------------------------------------
-			
-			log "Removing " & newTrack's name & " from library"
-			set newLocation to newTrack's location
-			set newPath to POSIX path of (newLocation as text)
-			delete newTrack
-			log "New file removed"
-			
-			------------------------------------------------------------------------------------------------------------------------------------
-			----------------------------------------------- Move new song to old location ------------------------------------------------
-			------------------------------------------------------------------------------------------------------------------------------------
-			
-			try
-				set oldDelims to AppleScript's text item delimiters -- save their current state
-				set AppleScript's text item delimiters to {"."} -- declare new delimiters
-				
-				set newExtension to last text item of newPath
-				set oldExtension to last text item of oldPath
-				set oldPathNoExtension to text items 1 through ((count of oldPath's text items) - 1) of oldPath
-				set oldPathNewExtension to (oldPathNoExtension as text) & "." & newExtension
-				log "Moving " & newPath & return & "to" & return & oldPath
-				do shell script "mv -f " & quoted form of newPath & " " & quoted form of oldPath
-				log "New file moved"
-				
-				set AppleScript's text item delimiters to oldDelims -- restore them
-			on error
-				set AppleScript's text item delimiters to oldDelims -- restore them in case something went wrong
-			end try
-			
-			------------------------------------------------------------------------------------------------------------------------------------
-			---------------------------------------------- Play song to register new path ------------------------------------------------
-			------------------------------------------------------------------------------------------------------------------------------------
-			
-			--set oldTrack to first item of (tracks whose database ID = (oldDatabaseId as integer))
-			ignoring application responses
-				--If the extensions haven't changed, then it will play uneventfully. If they have, it will link it to the file, but won't play
-				try
-					play oldTrack
-				on error
-					log "Error happened playing back old track before renaming extension. This is expected"
-				end try
-			end ignoring
-			
-			--If the new file's extension is different
-			if newExtension â‰  oldExtension then
-				log "newExtension: " & newExtension & ", oldExtension: " & oldExtension
-				log "Renaming " & oldPath & return & "to" & return & oldPathNewExtension
-				--Rename the file back to its proper extension, now that iTunes is linked to its file ID
-				do shell script "mv -f " & quoted form of oldPath & " " & quoted form of oldPathNewExtension
-				log "New file's extension renamed"
-				
-				ignoring application responses
-					--Now, make iTunes acknowledge the file and play it correctly
-					play oldTrack
-				end ignoring
-			end if
-			stop
-		end tell
-		
-	else --oldTrack is null
-		return "No track found"
-	end if
-end repeat
-
-tell application "iTunes"
-	copy old_fi to fixed indexing
-	display dialog "Done!" buttons {"OK"} default button 1 with icon 1 giving up after 5
-end tell
-
-return "Finished execution"
 
 
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------- Methods ------------------------------------------------------------
+------------------------------------------------------------ Handlers ------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -232,7 +74,7 @@ on FilterArtistList(TrackList, ExcludedTrack, ExactMatchOnly)
 	tell application "iTunes"
 		repeat with song in TrackList
 			--If the song's artist is an exact match, or an exact match is not required, and the song is not the excluded song
-			if (song's artist = ExcludedTrack's artist or not ExactMatchOnly) and song's database ID â‰  ExcludedTrack's database ID then
+			if (song's artist = ExcludedTrack's artist or not ExactMatchOnly) and song's database ID ­ ExcludedTrack's database ID then
 				copy song to end of resultList
 			end if
 		end repeat
@@ -454,3 +296,171 @@ end MergeSoundtrackInfo
 on MergePlayCount(SourceTrack, DestinationTrack)
 	tell application "iTunes" to set SourceTrack's played count to (SourceTrack's played count) + (DestinationTrack's played count)
 end MergePlayCount
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------- Script --------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------- Get the song selection, and quit if it's empty ---------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+
+tell application "iTunes"
+	if selection is not {} then
+		copy selection as list to selectedNewTracks
+		set songs_selected to (number of items in selectedNewTracks) as number
+		
+		set old_fi to fixed indexing
+		set fixed indexing to true
+		copy selection as list to selectedNewTracks
+	else -- Selection is empty
+		display dialog "There are no tracks selected. Please select the new tracks you wish to replace." buttons {"Cancel"} default button 1 with icon 0
+		return "No tracks selected"
+	end if
+end tell
+
+------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------- Prompt whether to Replace, Clone & Replace, or Cancel ---------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+
+set prompt_message to "Replace older track with newer (selected) tracks?
+			
+Clone & Replace will copy the tags from the old songs onto the new songs."
+
+tell application "iTunes"
+	set choice to button returned of (display dialog prompt_message buttons {"Cancel", "Clone & Replace", "Replace"} default button 3 with icon 1)
+	set cloneAndReplace to choice = "Clone & Replace"
+end tell
+
+------------------------------------------------------------------------------------------------------------------------------------
+----------------------------- Loop through each song, performing the appropriate actions ------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+
+repeat with newTrack in selectedNewTracks
+	--Set newTrack to the main library's copy so it gets deleted from the whole library later on
+	tell application "iTunes" to set newTrack to first item of (tracks whose database ID = newTrack's database ID as integer)
+	
+	log "Finding old track"
+	set oldTrack to my FindOldTrack(newTrack)
+	log "Old track found"
+	
+	if oldTrack ­ null then
+		------------------------------------------------------------------------------------------------------------------------------------
+		--------------------------------------------------- If Clone, copy tags over ----------------------------------------------------
+		------------------------------------------------------------------------------------------------------------------------------------
+		
+		if cloneAndReplace then
+			log "Starting Cloning"
+			set clone_success to my CloneTracks(oldTrack, newTrack)
+			
+			if not clone_success then
+				return "Clone Cancelled"
+			end if
+			
+			log "Finished Cloning"
+		end if
+		
+		------------------------------------------------------------------------------------------------------------------------------------
+		--------------------------------------------------- Merge Soundtrack Info ----------------------------------------------------
+		------------------------------------------------------------------------------------------------------------------------------------
+		
+		log "Merging soundtrack info"
+		my MergeSoundtrackInfo(oldTrack, newTrack)
+		log "Soundtrack info merged"
+		
+		------------------------------------------------------------------------------------------------------------------------------------
+		------------------------------------------------------- Merge Play Count -------------------------------------------------------
+		------------------------------------------------------------------------------------------------------------------------------------
+		
+		log "Merging play count"
+		my MergePlayCount(oldTrack, newTrack)
+		log "Play count merged"
+		
+		------------------------------------------------------------------------------------------------------------------------------------
+		-------------------------------------------- Get old file's location and delete file --------------------------------------------
+		------------------------------------------------------------------------------------------------------------------------------------
+		
+		tell application "iTunes"
+			set oldLocation to oldTrack's location
+			set oldPath to POSIX path of (oldLocation as text)
+			set oldDatabaseId to oldTrack's database ID as integer
+			log "Deleting " & oldPath
+			do shell script "rm -f " & quoted form of oldPath
+			log "Old file deleted"
+			
+			------------------------------------------------------------------------------------------------------------------------------------
+			------------------------------------ Store new file's location and remove from library -------------------------------------
+			------------------------------------------------------------------------------------------------------------------------------------
+			
+			log "Removing " & newTrack's name & " from library"
+			set newLocation to newTrack's location
+			set newPath to POSIX path of (newLocation as text)
+			delete newTrack
+			log "New file removed"
+			
+			------------------------------------------------------------------------------------------------------------------------------------
+			----------------------------------------------- Move new song to old location ------------------------------------------------
+			------------------------------------------------------------------------------------------------------------------------------------
+			
+			try
+				set oldDelims to AppleScript's text item delimiters -- save their current state
+				set AppleScript's text item delimiters to {"."} -- declare new delimiters
+				
+				set newExtension to last text item of newPath
+				set oldExtension to last text item of oldPath
+				set oldPathNoExtension to text items 1 through ((count of oldPath's text items) - 1) of oldPath
+				set oldPathNewExtension to (oldPathNoExtension as text) & "." & newExtension
+				log "Moving " & newPath & return & "to" & return & oldPath
+				do shell script "mv -f " & quoted form of newPath & " " & quoted form of oldPath
+				log "New file moved"
+				
+				set AppleScript's text item delimiters to oldDelims -- restore them
+			on error
+				set AppleScript's text item delimiters to oldDelims -- restore them in case something went wrong
+			end try
+			
+			------------------------------------------------------------------------------------------------------------------------------------
+			---------------------------------------------- Play song to register new path ------------------------------------------------
+			------------------------------------------------------------------------------------------------------------------------------------
+			
+			--set oldTrack to first item of (tracks whose database ID = (oldDatabaseId as integer))
+			ignoring application responses
+				--If the extensions haven't changed, then it will play uneventfully. If they have, it will link it to the file, but won't play
+				try
+					play oldTrack
+				on error
+					log "Error happened playing back old track before renaming extension. This is expected"
+				end try
+			end ignoring
+			
+			--If the new file's extension is different
+			if newExtension ­ oldExtension then
+				log "newExtension: " & newExtension & ", oldExtension: " & oldExtension
+				log "Renaming " & oldPath & return & "to" & return & oldPathNewExtension
+				--Rename the file back to its proper extension, now that iTunes is linked to its file ID
+				do shell script "mv -f " & quoted form of oldPath & " " & quoted form of oldPathNewExtension
+				log "New file's extension renamed"
+				
+				ignoring application responses
+					--Now, make iTunes acknowledge the file and play it correctly
+					play oldTrack
+				end ignoring
+			end if
+			stop
+		end tell
+		
+	else --oldTrack is null
+		return "No track found"
+	end if
+end repeat
+
+tell application "iTunes"
+	copy old_fi to fixed indexing
+	display dialog "Done!" buttons {"OK"} default button 1 with icon 1 giving up after 5
+end tell
+
+return "Finished execution"
