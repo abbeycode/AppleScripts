@@ -15,15 +15,25 @@ Many scripts use libraries I've written for certain common functions. Those are 
 
 The first line creates a reference to the library responsible for loading the other ones. That script has to be a compiled scripts (with the `.scpt` extension), whereas all other scripts are in the plaintext `.applescript` format. I've committed the `Library Loader` script in both formats, so the plain-text version can be searched and diff'ed, but the compiled version can be loaded as a property. Each library script contains a comment at the top of the file, which can be copied and pasted into a script that wishes to refer to it.
 
-Any scripts loaded with `Library Loader` can be compiled or plain-text, but plain-text ones must be encoded as UTF-8, since that's what it is expecting when decoding them.
+Any scripts loaded with `Library Loader` can be compiled or plain-text, and plain-text files can be encoded in Mac format (which AppleScript Editor uses) or UTF-8, but only in those two.
 
 # Tests
 
-I've got a basic suite of custom-built tests in `Scripts/Libraries/Library Tests.applescript`, which you can run, and observe its log output for failures. I plan to someday move it to [ASUnit](http://nirs.freeshell.org/asunit/) instead.
+I've got a basic suite of custom-built tests in `Scripts/Libraries/Library Tests.applescript`, which you can run, and observe its log output for failures. I plan to someday move it to [ASUnit](http://nirs.freeshell.org/asunit/) instead ([Issue #1](https://github.com/abbeycode/AppleScripts/issues/1)).
 
 # iTunes Script Menu
 
 Some iTunes scripts don't work from the Script Menu at all, such as [Re-import Lossless Tracks.applescript](https://github.com/abbeycode/AppleScripts/blob/master/iTunes/Scripts/Re-import%20Lossless%20Tracks.applescript), and others, such as [Upgrade Tracks.applescript](https://github.com/abbeycode/AppleScripts/blob/master/iTunes/Scripts/Upgrade%20Tracks.applescript) need to be compiled into `.scpt` format to work.
+
+# Automator Service Scripts
+
+Some scripts are intended to be run as Automator "Run ApplesScript" actions within a [service](http://www.macosxautomation.com/services/), though they don't provide much utility as a standalone script. These are in the [Services](https://github.com/abbeycode/AppleScripts/blob/master/Services) folder. You can use these in your own services by using the following text in the Automator workflow (as I described in [a blog post](http://dovfrankel.com/post/49510291962/running-applescripts-from-automator)):
+
+    on run {input, parameters}
+    
+        run script file "<git checkout path>:AppleScripts:Services:Encode With HandBrake.applescript" with parameters {input, parameters}
+    
+    end run
 
 # Disclaimer
 
