@@ -1,9 +1,9 @@
 (*
 Library Loader
-v1.0
+v1.1
 Dov Frankel, 2013
 
-loadScript() handler originally from http://codemunki.com
+loadScript() handler adapted from code at http://codemunki.com
 
 
 *** Instructions ***
@@ -14,9 +14,13 @@ property LibLoader : load script file ((path to scripts folder from user domain 
 
 You can load compiled scripts (.scpt) or plain text scripts (.applescript). Make sure, though, that your .applescript files are encoded as either Mac (what AppleScript Editor uses) UTF-8 (if you use another text editor). Any scripts loaded are expected to be installed into your Scripts directory. Use the line below to reference the script:
 
-property LibName : LibLoader's loadScript("FolderName:SomeCoolScript.applescript")
+property LibName : LibLoader's loadScript("Folder Name:Some Cool Script.applescript")
 *)
 
+-- Loads any script to use as a script property, with a path relative to ~/Library/Scripts
+(*
+property LibName : LibLoader's loadScript("Folder Name:Some Cool Script.applescript")
+*)
 on loadScript(scriptRelativePath)
 	
 	set scriptFileToLoad to my fileAliasInScriptsFolder(scriptRelativePath) as text -- to be safe 
@@ -51,9 +55,26 @@ Please encode as Mac or UTF-8"
 	return scriptObject
 end loadScript
 
+-- Runs any script (and and returns its output) with a path relative to ~/Library/Scripts
+(*
+LibLoader's runScript("Folder Name:Script Name.applescript")
+*)
+on runScript(scriptRelativePath)
+	set theScriptPath to my fileAliasInScriptsFolder(scriptRelativePath)
+	set theResult to run script theScriptPath
+	log theResult
+	return theResult
+end runScript
+
+
+(* Intended for Private use *)
+
 on fileAliasInScriptsFolder(scriptRelativePath)
 	return ((path to scripts folder from user domain as text) & scriptRelativePath) as alias
 end fileAliasInScriptsFolder
 
--- Useful for testing this library
+
+(* Test Calls *)
+
 --property StringsLib : loadScript("Libraries:Strings utf16.applescript")
+--my runScript("Test Return String.applescript")
