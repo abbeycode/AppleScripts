@@ -2,6 +2,10 @@
 Move tasks from Things to OmniFocus
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Used to migrate from Things to OmniFocus
+
 *)
 
 tell application "Things.app"
@@ -17,14 +21,14 @@ repeat with thingsToDo in theToDos
 	
 	tell application "OmniFocus"
 		tell default document
-			set TheProject to project "TV Shows" of folder "Lists"
-			set TheContext to context "Mac" of context "Home"
+			set theProject to project "TV Shows" of folder "Lists"
+			set theContext to context "Mac" of context "Home"
 			
 			--display dialog "Name: " & theName & "
 			--Tags: '" & theTags & "'"
 			
-			set newTask to make new inbox task with properties {name:theName, note:theTags, context:TheContext}
-			set assigned container of newTask to TheProject
+			set newTask to make new inbox task with properties {name:theName, note:theTags, context:theContext}
+			set assigned container of newTask to theProject
 			
 			compact
 		end tell

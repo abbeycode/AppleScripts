@@ -1,15 +1,14 @@
 (*
 Gruber Title
-By Dov Frankel,
-based on AppleScript by Cantus Vetustus, and Perl script by John Gruber & Aristotle Pagaltzis
+v1.0
+Dov Frankel, 2013
+http://dovfrankel.com
+
+		(based on a script by Doug Adams (via Cantus Vetustus), and Perl script by John Gruber & Aristotle Pagaltzis)
 
 
-Proper English Title Capitalization
-By Cantus Vetustus
-Report Bugs/Suggestions to cantusvetustus@spymac.com
+Takes a selection of tracks in iTunes and gives them properly-cased titles
 
-Based on Doug Adams's original "Track Names to Word Caps" AppleScript.
-His AppleScript can be downloaded at: http://www.malcolmadams.com/itunes/scripts/scripts09.shtml
 *)
 
 

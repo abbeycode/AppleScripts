@@ -2,6 +2,10 @@
 Load Torrent
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Called from Hazel, used to automatically load a torrent file with transmission, and set it to override the default to make sure it gets automatically started
+
 *)
 
 property startWhenAdded : false
@@ -26,7 +30,7 @@ on hazelProcessFile(theFile)
 			set startChecked to (get value of checkbox "Start when added" of openDialogWindow) as boolean
 			
 			-- If app and script don't agree, toggle the checkbox
-			if startChecked ­ startWhenAdded then
+			if startChecked â‰  startWhenAdded then
 				click checkbox "Start when added" of openDialogWindow
 			end if
 			

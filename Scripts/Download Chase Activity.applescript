@@ -2,6 +2,13 @@
 Download Chase Activity
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Downloads QFX files from Chase's banking site for the accounts you configure. There are examples below of downloading info for banking accounts and a credit card account.
+
+This script is intended to run as a Calendar Automator action every week. It gets the last 8 days of activity.
+
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")

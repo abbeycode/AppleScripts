@@ -2,6 +2,10 @@
 Pay Stub to Yojimbo
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Hazel-triggered, saves a pay stub PDF from Dropbox into Yojimbo, with appropriate naming and tagging
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")

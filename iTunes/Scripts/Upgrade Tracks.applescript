@@ -1,6 +1,20 @@
 (*
 Upgrade Tracks
-By Dov Frankel
+v1.0
+Dov Frankel, 2013
+http://dovfrankel.com
+
+
+Replaces one track in iTunes with another version of the same one
+
+If you, like me, are way too particular about metadata (specifically Date Added, Play Count, and other fields you don't have direct control over, this script might be worth a look. You select a track that's a newer version of one you already have (such as a high-bitrate AAC meant to replace a crunched-down mp3), and run the script. It will then:
+
+• Attempt to automatically determine which track, or prompt you if there are multiple (or no) matches
+• (Optionally) Copy over the tags you choose from the older track
+• Merge soundtrack info (if you use the Grouping field to store tags, it will take a soundtrack tag on the original file and append it to the new track's tags, separated by a comma
+• Combine the play counts of the two versions of the track
+• Replace the file of the original track with that of the newer (selected) one, keeping it in all playlists it was always on
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
@@ -74,7 +88,7 @@ on FilterArtistList(TrackList, ExcludedTrack, ExactMatchOnly)
 	tell application "iTunes"
 		repeat with song in TrackList
 			--If the song's artist is an exact match, or an exact match is not required, and the song is not the excluded song
-			if (song's artist = ExcludedTrack's artist or not ExactMatchOnly) and song's database ID � ExcludedTrack's database ID then
+			if (song's artist = ExcludedTrack's artist or not ExactMatchOnly) and song's database ID ≠ ExcludedTrack's database ID then
 				copy song to end of resultList
 			end if
 		end repeat
@@ -348,7 +362,7 @@ repeat with newTrack in selectedNewTracks
 	set oldTrack to my FindOldTrack(newTrack)
 	log "Old track found"
 	
-	if oldTrack � null then
+	if oldTrack ≠ null then
 		------------------------------------------------------------------------------------------------------------------------------------
 		--------------------------------------------------- If Clone, copy tags over ----------------------------------------------------
 		------------------------------------------------------------------------------------------------------------------------------------
@@ -438,7 +452,7 @@ repeat with newTrack in selectedNewTracks
 			end ignoring
 			
 			--If the new file's extension is different
-			if newExtension � oldExtension then
+			if newExtension ≠ oldExtension then
 				log "newExtension: " & newExtension & ", oldExtension: " & oldExtension
 				log "Renaming " & oldPath & return & "to" & return & oldPathNewExtension
 				--Rename the file back to its proper extension, now that iTunes is linked to its file ID

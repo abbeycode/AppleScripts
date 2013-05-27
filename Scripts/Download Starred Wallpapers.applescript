@@ -2,6 +2,12 @@
 Download Starred Wallpapers
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Uses NetNewsWire to download wallpapers from InterfaceLIFT's site that have been starred in Google Reader.
+
+It downloads them (using the curl command line tool) in two different resolutions, and relies on Hazel automation to copy them to their intended destinations.
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")

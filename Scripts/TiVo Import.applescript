@@ -2,6 +2,15 @@
 TiVo Import
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+A Goldbergian script, which Hazel kicks off when TiVo Transfer moves over a recording, giving access to TiVo recordings on the AppleTV.
+
+• Calls TiVo Decode to remove the TiVo DRM layer
+• Calls HandBrake to convert it into an AppleTV-compatible mp4 file
+• Adds it to iTunes
+• Tags it with iFlicks
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
@@ -55,8 +64,8 @@ on hazelProcessFile(theFile)
 		set convertedPath to convertedDir & "/" & convertedFile
 		
 		-- Convert the MPEG file using Handbrake
-		set handbrakeCommand to "/Applications/HandBrakeCLI -i " & quoted form of mpgPath �
-			& " -o " & quoted form of convertedPath �
+		set handbrakeCommand to "/Applications/HandBrakeCLI -i " & quoted form of mpgPath ¬
+			& " -o " & quoted form of convertedPath ¬
 			& " --preset='AppleTV 2'"
 		--log handbrakeCommand
 		do shell script handbrakeCommand

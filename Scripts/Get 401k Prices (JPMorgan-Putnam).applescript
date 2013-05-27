@@ -2,6 +2,10 @@
 Get 401k Prices (JPMorgan & Putnam)
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Logs onto JPMorgan's and Putnam's 401k pages using your credentials. It downloads share prices from the JPMorgan pages, and your most recent contribution information from Putnam.
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
@@ -24,14 +28,14 @@ tell SafariLib to CloseWindow()
 
 delay 5
 
---set sgContribution to my Get401kContribution()
+set putnamContribution to my Get401kContribution()
 
 set outMessage to "401k Prices
 JPMorgan SmartRetire 2050 (RBS)	Ð " & rbsPrice & "
 Target Date 2050 Fund (JPM)		Ð " & jpmPrice & "
 
-SG Contribution
-" -- & sgContribution
+Putnam Contribution
+" -- & putnamContribution
 
 -- Open up text window for copy/paste of results
 tell application "TextEdit"

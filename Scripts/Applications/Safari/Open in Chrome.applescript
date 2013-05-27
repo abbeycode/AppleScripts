@@ -2,6 +2,9 @@
 Safari Open in Chrome
 v1.0
 Dov Frankel, 2013
+
+Opens the current Safari in Chrome (for those times you just can't do without Flash...). I have this one mapped to ⌃⇧S with FastScripts.
+
 *)
 
 -- Get URL from Safari
@@ -21,7 +24,7 @@ tell application "Google Chrome"
 	set theTab to active tab of theWindow
 	
 	-- If that window isn't pointing to your home page, then open a new tab
-	if theTab's URL � "http://www.google.com/" and theTab's URL � "chrome://newtab/" then
+	if theTab's URL ≠ "http://www.google.com/" and theTab's URL ≠ "chrome://newtab/" then
 		tell theWindow to make new tab
 		set theTab to active tab of theWindow
 	end if

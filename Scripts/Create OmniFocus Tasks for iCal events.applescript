@@ -2,6 +2,16 @@
 Create OmniFocus Tasks for iCal events
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Gets the day's list of calendar events for particular calendars and creates OmniFocus to-do items for each.
+
+It ignores all-day events, except for those on the Library Loans calendar (populated by Delicious Library) and the Birthdays calendar, which it handles specially, gathering contact information for the birthday boy/girl, and placing it into the notes field.
+
+You can specify which of your calendars you would like it to use by setting the property "theCalendarNames" below.
+
+This script is best used as a Calendar item from Automator.
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")

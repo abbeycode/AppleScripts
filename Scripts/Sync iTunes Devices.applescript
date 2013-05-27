@@ -2,6 +2,12 @@
 Sync iTunes Devices
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+I haven't used this one in a while, but it syncs all "iPods" and Apple TVs with iTunes.
+
+It uses UI scripting to accomplish the AppleTV syncing portion
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
@@ -18,7 +24,6 @@ tell application "iTunes" to activate
 run script POSIX file "/Users/Dov/Library/iTunes/Scripts/Update Expired Podcasts.scpt"
 
 -- Sync the Apple TV first, since it uses GUI scripting, and is prone to failure, which causes problems when syncing the iPods first as they hang, draining the iPad's battery
-(* No more Apple TVs to sync
 set appleTVsSynced to 0
 -- Sync all AppleTVs
 repeat with aTv in AppleTvNames
@@ -29,12 +34,12 @@ repeat with aTv in AppleTvNames
 		set appleTVsSynced to appleTVsSynced + 1
 	end if
 end repeat
-*)
+
 -- Sync the iPods after the AppleTVs have finished syncing
 
 tell application "iTunes"
 	-- wait 10 minutes for any podcasts to finish downloading
-	--delay 600
+	delay 600
 	
 	set iPodsSynced to 0
 	-- Sync all iPods
@@ -48,7 +53,6 @@ tell application "iTunes"
 end tell
 
 -- No more UI scripting, since Apple TVs are no longer synced
--- tell iTunesLib to SelectSource("Music")
+tell iTunesLib to SelectSource("Music")
 
-tell GrowlLib to NotifyNonsticky("Synced " & StringsLib's Pluralize(iPodsSynced, "iPod", "iPods"))
--- & ", " & StringsLib's Pluralize(appleTVsSynced, "ðtv", "ðtv's"))
+tell GrowlLib to NotifyNonsticky("Synced " & StringsLib's Pluralize(iPodsSynced, "iPod", "iPods" & ", " & StringsLib's Pluralize(appleTVsSynced, "ï£¿tv", "ï£¿tv's")))

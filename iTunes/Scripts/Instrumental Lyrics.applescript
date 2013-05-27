@@ -1,3 +1,13 @@
+(*
+Instrumental Lyrics
+v1.0
+Dov Frankel, 2013
+http://dovfrankel.com
+
+Takes a selection of iTunes tracks and assigns them all the lyrics "Instrumental"
+
+*)
+
 tell application "iTunes"
 	if selection is not {} then
 		copy selection as list to selectedTracks

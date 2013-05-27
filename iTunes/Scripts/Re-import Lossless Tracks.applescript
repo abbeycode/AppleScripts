@@ -1,11 +1,21 @@
 (*
 "Re-import Lossless Tracks"
-written by Dov Frankel
+Dov Frankel, 2013
 http://dovfrankel.com
 
 v1.0 March 9, 2013 (iTunes 11.0.2, Toast 11.0.3)
 
 Requires iTunes and Toast Titanium
+
+The Upgrade Tracks script has the side effect of leaving a track's Sound Check level the same as the original tracks, which can sometimes be a problem when upgrading, leaving a song playing back too loudly (or softly) with Sound Check enabled.
+
+There's a way around it (for lossless files), but it involves using Toast, and specifically non-scriptable features of Toast. Because this script involves UI scripting, it cannot be called from the iTunes Script menu.
+
+This automates the process of taking a lossless m4a iTunes track, burning it to a virtual audio CD, and then using iTunes's ability to re-import a song from its original CD, adjusts the volume level. You're ending up with a different file, but since it started out lossless* the resulting re-imported file should have the same audio data.
+
+
+*You can use this script with lossy files, but it is not recommended, and the script will warn you if any non-lossless files are selected
+
 *)
 
 -- Initialize variables shared between applications

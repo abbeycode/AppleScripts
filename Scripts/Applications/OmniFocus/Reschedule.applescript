@@ -2,6 +2,11 @@
 OmniFocus Reschedule
 v1.0
 Dov Frankel, 2013
+
+When I switched to OmniFocus from Things, I missed a feature Things had, to quickly push off a to-do by a certain number of days. This script, which I have mapped to âŒ˜R using FastScripts, does that. It will push the start (and end) date forward by a certain number of days.
+
+Most of my to-dos with a due date fall on the same day as the start date, and the script will only update the end date if that's the case (or there is no start date). If the selected to-do does not have any dates, it will look for containing to-do groups and adjust them.
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
@@ -37,11 +42,11 @@ tell application "OmniFocus"
 		set theDatesMatch to DatesLib's datesMatch(theStartDate, theDueDate)
 		
 		-- Correct Start Date
-		if theStartDate is not missing value then set theTask's start date to Â
+		if theStartDate is not missing value then set theTask's start date to Â¬
 			DatesLib's addDays(theStartDate, rescheduleBy)
 		
 		-- Correct Due Date (only if Start and Due initially matched, or only Due Date is assigned - assumption made that both can't be missing, verified above)
-		if theDatesMatch or theStartDate is missing value then set theTask's due date to Â
+		if theDatesMatch or theStartDate is missing value then set theTask's due date to Â¬
 			DatesLib's addDays(theDueDate, rescheduleBy)
 	end repeat
 end tell
