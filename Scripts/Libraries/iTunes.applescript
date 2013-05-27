@@ -57,7 +57,7 @@ on SyncAppleTv(AppleTvName)
 	set AppleTvName to AppleTvName as text
 	
 	if not (my SelectSource(AppleTvName)) then
-		log ("Ô£øtv '" & AppleTvName & "' not found")
+		log ("tv '" & AppleTvName & "' not found")
 		return false
 	end if
 	
@@ -65,15 +65,15 @@ on SyncAppleTv(AppleTvName)
 	
 	tell application "System Events"
 		tell process "iTunes"
-			set syncMenuItem to menu item ("Sync ‚Äú" & AppleTvName & "‚Äù") of menu 1 of menu bar item "File" of menu bar 1
+			set syncMenuItem to menu item ("Sync “" & AppleTvName & "”") of menu 1 of menu bar item "File" of menu bar 1
 			
 			if syncMenuItem's enabled is true then
-				log ("Syncing Ô£øtv: " & AppleTvName)
+				log ("Syncing tv: " & AppleTvName)
 				click syncMenuItem
 				delay 5
 				return true
 			else
-				log ("Not syncing Ô£øtv: " & AppleTvName & " (already syncing)")
+				log ("Not syncing tv: " & AppleTvName & " (already syncing)")
 				return false
 			end if
 		end tell

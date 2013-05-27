@@ -27,7 +27,7 @@ end Pluralize
 StringsLib's Trim("     spaced text  ")
 *)
 on trim(someText)
-	set theseCharacters to Â¬
+	set theseCharacters to Â
 		{" ", tab, ASCII character 10, return, ASCII character 0}
 	
 	--log "Trimming text: " & someText
@@ -56,7 +56,7 @@ end split
 
 -- Replaces a substring with another substring
 (*
-StringsLib's replace_text(some_text, "abc", "def")
+set my_var to StringsLib's replace_text(some_text, "abc", "def")
 *)
 on replace_text(this_text, search_string, replacement_string)
 	set prevTIDs to AppleScript's text item delimiters

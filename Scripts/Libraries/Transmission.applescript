@@ -48,7 +48,7 @@ on ToggleSpeedLimit(SpeedLimitOn)
 	tell application "System Events"
 		tell process "Transmission"
 			-- If the limit isn't already set to what it should be, toggle it
-			if SpeedLimitOn â‰  my SpeedLimitIsOn() then
+			if SpeedLimitOn ­ my SpeedLimitIsOn() then
 				click menu item "Speed Limit" of menu "Transfers" of menu bar 1
 				
 				-- If it was just toggled on, wait for it to kick in before returning
@@ -67,7 +67,7 @@ on SpeedLimitIsOn()
 	
 	tell application "System Events"
 		tell process "Transmission"
-			return (value of attribute "AXMenuItemMarkChar" of menu item "Speed Limit" of menu "Transfers" of menu bar 1 as string) â‰  ""
+			return (value of attribute "AXMenuItemMarkChar" of menu item "Speed Limit" of menu "Transfers" of menu bar 1 as string) ­ ""
 		end tell
 	end tell
 end SpeedLimitIsOn
