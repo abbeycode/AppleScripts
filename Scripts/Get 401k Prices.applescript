@@ -2,37 +2,28 @@
 Get 401k Prices
 v1.0
 Dov Frankel, 2013
+http://dovfrankel.com
+
+Logs into the Principal financial website, and gets contribution and share price information, copying them to the clipboard
+
 *)
 
 property LibLoader : load script file ((path to scripts folder from user domain as text) & "Libraries:Library Loader.scpt")
-property TransmissionLib : LibLoader's loadScript("Libraries:Transmission.applescript")
-property GrowlLib : LibLoader's loadScript("Libraries:Growl.applescript")
 property SafariLib : LibLoader's loadScript("Libraries:Safari.applescript")
 property DatesLib : LibLoader's loadScript("Libraries:Dates.applescript")
 
--- Turn Speed Limit on
-tell TransmissionLib to initialize()
-tell TransmissionLib to ToggleSpeedLimit(true)
 
-set sacSharePrice to my getPrincipalSharePrice()
-set sacContributions to my getPrincipalContributions()
+set principalSharePrice to my getPrincipalSharePrice()
+set principalContributions to my getPrincipalContributions()
 
 set outMessage to "401k Price
-SAC 401(k)   " & sacSharePrice's shareDate & "   " & sacSharePrice's sharePrice & "
+Principal 401(k)   " & principalSharePrice's shareDate & "   " & principalSharePrice's sharePrice & "
 
+" & principalContributions
 
-" & sacContributions
+--set the clipboard to (outMessage as Unicode text)
+return (outMessage as Unicode text)
 
--- Open up text window for copy/paste of results
-tell application "TextEdit"
-	activate
-	set doc to make new document
-	set doc's text to outMessage
-end tell
-
-
-tell GrowlLib to NotifyNonsticky("401k share prices downloaded")
-tell TransmissionLib to Finalize()
 
 -----------------------------------------------------------------------------
 on getPrincipalSharePrice()
