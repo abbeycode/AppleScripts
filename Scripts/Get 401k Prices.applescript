@@ -21,6 +21,12 @@ Principal 401(k)   " & principalSharePrice's shareDate & "   " & principalShareP
 
 " & principalContributions
 
+-- Log out, to make it easier to run the script multiple times in a shorter window
+SafariLib's LoadUrlInFrontWindow("https://secure05.principal.com/https.secure05/shared/members/corp/LogoutServlet")
+
+-- All done with the window, close it	
+tell SafariLib to CloseWindow()
+
 --set the clipboard to (outMessage as Unicode text)
 return (outMessage as Unicode text)
 
@@ -31,25 +37,63 @@ on getPrincipalSharePrice()
 		SafariLib's LoadUrlInNewWindow("http://www.principal.com/InvestmentProfiles/performance.faces?inv=4568&rtclss=68&retail=false")
 		
 		set doc to document "Principal LifeTime 2050 Separate Account-I3"
-		do JavaScript "document.getElementById('idc-fundchart-export').click()" in doc
-	end tell
-	
-	tell application "Finder"
-		set csvFilePath to POSIX path of ((path to downloads folder as text) & "chartdata.csv")
+		set frameURL to (do JavaScript "document.getElementById('QSAPI_IFRAME_0').getAttribute('src')" in doc) as text
 		
-		repeat until exists csvFilePath as POSIX file
-			delay 0.5
-		end repeat
+		SafariLib's LoadUrlInFrontWindow(frameURL)
+		
+		set doc to document "Chart"
+		do JavaScript "document.getElementsByClassName('qs-urlchart-export')[0].click()" in doc
+		delay 5
 	end tell
-	
-	set dateValue to my getFirstRowFieldFromCSV(csvFilePath, "Date")
-	set priceValue to my getFirstRowFieldFromCSV(csvFilePath, "Unit Value/Share Price")
-	
-	set csvFile to POSIX file csvFilePath
-	tell application "Finder" to move csvFile to trash
 	
 	-- All done with the window, close it	
 	tell SafariLib to CloseWindow()
+	
+	tell application "Finder"
+		set xlsFilePath to POSIX path of ((path to downloads folder as text) & "MarketPrice.xls")
+		
+		set theTryNumber to 1
+		
+		repeat until exists xlsFilePath as POSIX file
+			delay 0.5
+			
+			if theTryNumber = 60 then
+				display dialog "Error getting " & xlsFilePath
+				return 0
+			end if
+			
+			set theTryNumber to theTryNumber + 1
+		end repeat
+	end tell
+	
+	-- Convert XLS to CSV
+	set xlsFilePath to POSIX path of ((path to downloads folder as text) & "MarketPrice.xls")
+	set xlsFile to POSIX file (xlsFilePath as text)
+	
+	tell application "Numbers"
+		open xlsFile
+		
+		set dateValue to missing value
+		set priceValue to missing value
+		set rowNumber to 366
+		
+		set xlsDoc to document "MarketPrice"
+		repeat while dateValue is missing value and priceValue is missing value
+			try
+				set dateCell to "A" & rowNumber
+				set priceCell to "B" & rowNumber
+				set dateValue to (value of cell dateCell of table 1 of sheet 1 of xlsDoc as text)
+				set priceValue to (value of cell priceCell of table 1 of sheet 1 of xlsDoc as text)
+			on error err
+				log err
+				log "There is no row " & rowNumber & ". Trying row " & rowNumber - 1
+				set rowNumber to rowNumber - 1
+			end try
+		end repeat
+		close xlsDoc saving no
+	end tell
+	
+	tell application "Finder" to move xlsFile to trash
 	
 	return {shareDate:dateValue, sharePrice:priceValue}
 end getPrincipalSharePrice
@@ -115,9 +159,6 @@ on getPrincipalContributions()
 		returnValue();
 		" in doc
 		
-		-- All done with the window, close it	
-		tell SafariLib to CloseWindow()
-		
 		return "SAC Contributions:
 
 " & activityTable
@@ -132,7 +173,7 @@ on logOntoPrincipalSite()
 		activate
 		delay 2
 		
-		set doc to document "Principal.com: 401k plans, investment management, insurance, mutual funds and more"
+		set doc to document "Principal.com: Investment Management, Retirement, and Insurance"
 		
 		-- Log in, filling username and password, etc, and submit form
 		-- Set to 'Personal'	

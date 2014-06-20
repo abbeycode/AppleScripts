@@ -38,7 +38,7 @@ end TurnDelayOff
 
 -- Turns Speed Limit on or off, depending on the SpeedLimitOn parameter
 on ToggleSpeedLimit(SpeedLimitOn)
-	if not TransmissionIsRunning() then return
+	if not my TransmissionIsRunning() then return
 	
 	-- Sometimes necessary (who knows why)
 	set SpeedLimitOn to SpeedLimitOn as boolean
@@ -48,7 +48,7 @@ on ToggleSpeedLimit(SpeedLimitOn)
 	tell application "System Events"
 		tell process "Transmission"
 			-- If the limit isn't already set to what it should be, toggle it
-			if SpeedLimitOn ­ my SpeedLimitIsOn() then
+			if SpeedLimitOn â‰  my SpeedLimitIsOn() then
 				click menu item "Speed Limit" of menu "Transfers" of menu bar 1
 				
 				-- If it was just toggled on, wait for it to kick in before returning
@@ -61,21 +61,17 @@ on ToggleSpeedLimit(SpeedLimitOn)
 end ToggleSpeedLimit
 
 on SpeedLimitIsOn()
-	if not TransmissionIsRunning() then return no
+	if not my TransmissionIsRunning() then return no
 	
 	tell application "Transmission" to activate
 	
 	tell application "System Events"
 		tell process "Transmission"
-			return (value of attribute "AXMenuItemMarkChar" of menu item "Speed Limit" of menu "Transfers" of menu bar 1 as string) ­ ""
+			return (value of attribute "AXMenuItemMarkChar" of menu item "Speed Limit" of menu "Transfers" of menu bar 1 is not missing value)
 		end tell
 	end tell
 end SpeedLimitIsOn
 
 on TransmissionIsRunning()
-	
-	tell application "System Events"
-		return (name of processes) contains "Transmission"
-	end tell
-	
+	return application "Transmission" is running
 end TransmissionIsRunning

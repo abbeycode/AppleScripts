@@ -20,11 +20,14 @@ tell TransmissionLib to ToggleSpeedLimit(true)
 -- The scripts below both return strings
 set the401kInfo to LibLoader's runScript("Get 401k Prices.applescript")
 set theNotesReceipts to LibLoader's runScript("Get Receipts from Notes.applescript")
+set sallieMaeSplits to LibLoader's runScript("Get Sallie Mae Loan Splits.applescript")
 
 
 set outMessage to the401kInfo & "
 
-" & theNotesReceipts
+" & theNotesReceipts & "
+
+" & sallieMaeSplits
 
 
 -- Open up text window for copy/paste of results

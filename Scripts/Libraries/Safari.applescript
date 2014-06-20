@@ -47,8 +47,8 @@ tell SafariLib to LoadUrlInNewWindow( "http://www..." )
 *)
 on LoadUrlInNewWindow(theUrl)
 	tell application "Safari"
-		make new document
 		activate
+		make new document
 	end tell
 	my LoadUrlInFrontWindow(theUrl)
 end LoadUrlInNewWindow
@@ -63,7 +63,7 @@ on WaitForFrontWindowToLoadIgnoringUrlContainingString(OldUrl, UrlStr)
 		repeat
 			my WaitForFrontWindowToLoad()
 			set theUrl to front document's URL
-			set correctPageLoaded to theUrl ­ OldUrl and theUrl contains UrlStr
+			set correctPageLoaded to theUrl â‰  OldUrl and theUrl contains UrlStr
 			log "Old URL:
 " & OldUrl & "
 New URL:
@@ -91,7 +91,7 @@ on WaitForFrontWindowToLoad()
 			delay 3
 			set theDoc to front document
 			set maxAttempts to maxAttempts - 1
-			set doneLoading to ((do JavaScript "document.readyState" in theDoc) is "complete") Â
+			set doneLoading to ((do JavaScript "document.readyState" in theDoc) is "complete") Â¬
 				and theDoc's URL does not start with "topsites"
 			
 			set maxAttempts to maxAttempts - 1
