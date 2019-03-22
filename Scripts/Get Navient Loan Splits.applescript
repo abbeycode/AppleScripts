@@ -1,6 +1,6 @@
 (*
 Get Navient Loan Splits
-v1.1
+v1.2
 Dov Frankel, 2013
 http://dovfrankel.com
 
@@ -58,6 +58,13 @@ on getSplitsForAccount(username)
 	
 	tell application "Safari"
 		set doc to document "Navient | Account History"
+		-- Select "All Loans" from "Display" dropdown
+		do JavaScript "
+			$('#SelctedHistType').val('1');
+			HistoryDropdownSelect();
+		" in doc
+		
+		delay 5
 		
 		set theSplits to {}
 		
@@ -68,9 +75,10 @@ on getSplitsForAccount(username)
 				$('tr:has(td[title=\"Payment\"])').each(function() {
 					//console.log($(this));
 					payments.push({
+						loan: $(this).children(':nth-child(2)').text().trim(),
 						date: $(this).children(':nth-child(1)').text().trim(),
-						principal: parseFloat($(this).children(':nth-child(3)').attr('title')),
-						interest: parseFloat($(this).children(':nth-child(4)').attr('title'))
+						principal: parseFloat($(this).children(':nth-child(4)').attr('title')),
+						interest: parseFloat($(this).children(':nth-child(5)').attr('title'))
 					});
 					
 				});
@@ -83,6 +91,14 @@ on getSplitsForAccount(username)
 	end tell
 	
 	set paymentMonth to null
+	set summedPaymentLoans to {¬
+		"2681 Signature Student", ¬
+		"2715 Signature Student", ¬
+		"2699 Signature Student", ¬
+		"2707 Signature Student"}
+	set summedPaymentDate to null
+	set summedPaymentPrincipal to 0.0
+	set summedPaymentInterest to 0.0
 	
 	repeat with payment in payments
 		set paymentDate to payment's |date|
@@ -96,9 +112,31 @@ on getSplitsForAccount(username)
 		set totalPrincipal to -1 * (payment's principal)
 		set totalInterest to -1 * (payment's interest)
 		
-		set theSplit to {|date|:paymentDate, principal:totalPrincipal, interest:totalInterest}
-		copy theSplit to the end of theSplits
+		-- Is it a payment that's supposed to be summed up?
+		set isSummedPayment to false
+		repeat with summedLoan in summedPaymentLoans
+			if payment's loan as string is equal to summedLoan as string then
+				set isSummedPayment to true
+				exit repeat
+			end if
+		end repeat
+		
+		-- Treat summed payments differently
+		if not isSummedPayment then
+			set theSplit to {|date|:paymentDate, principal:totalPrincipal, interest:totalInterest}
+			copy theSplit to the end of theSplits
+		else
+			log "Summing up amounts for loan " & payment's loan
+			if summedPaymentDate is null then set summedPaymentDate to payment's |date|
+			set summedPaymentPrincipal to summedPaymentPrincipal + totalPrincipal
+			set summedPaymentInterest to summedPaymentInterest + totalInterest
+		end if
 	end repeat
+	
+	if summedPaymentPrincipal > 0.0 then
+		set theSplit to {|date|:summedPaymentDate, principal:summedPaymentPrincipal, interest:summedPaymentInterest}
+		copy theSplit to the end of theSplits
+	end if
 	
 	return theSplits
 	
