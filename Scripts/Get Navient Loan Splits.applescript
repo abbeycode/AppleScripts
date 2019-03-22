@@ -1,10 +1,10 @@
 (*
-Get Sallie Mae Loan Splits
-v1.0
+Get Navient Loan Splits
+v1.1
 Dov Frankel, 2013
 http://dovfrankel.com
 
-Logs into the Sallie Mae website, and totals up the Principal and Interest amounts by month for each category of loan listed
+Logs into the Navient website, and totals up the Principal and Interest amounts by month for each category of loan listed
 
 *)
 
@@ -17,22 +17,27 @@ property AccountInfo : {¬
 	{label:"Christine", username:"christine_username", password:"christine_password"} ¬
 		}
 
+
+if (day of (current date)) as number < 20 then return "Too early for this month to retrieve new loan splits"
+
+
 -- Initialize output
-set outMessage to "Sallie Mae principal/interest splits"
+set outMessage to "Navient principal/interest splits"
 
 -- Loop through each account, getting their outputs, appending to main
 repeat with account in AccountInfo
-	my logOntoSallieMaeSite(account's username, account's password)
-	set theAccountSplits to my getSplitsForAccount()
+	my logOntoNavientSite(account's username, account's password)
+	set theAccountSplits to my getSplitsForAccount(account's username)
 	
 	set outMessage to outMessage & "
 " & account's label
 	repeat with accountSplit in theAccountSplits
-		set split to accountSplit's split
-		set totalAmount to (split's principal) + (split's interest)
+		log accountSplit
+		set totalAmount to (accountSplit's principal) + (accountSplit's interest)
 		set outMessage to outMessage & "
-" & accountSplit's accountName & "(" & split's |date| & ", $" & totalAmount & ") – Principal: $" & split's principal & "	Interest: $" & split's interest
+(" & accountSplit's |date| & ", $" & totalAmount & ") – Principal: $" & accountSplit's principal & "	Interest: $" & accountSplit's interest
 	end repeat
+	
 	
 	set outMessage to outMessage & "
 "
@@ -47,63 +52,25 @@ return (outMessage as Unicode text)
 
 
 -----------------------------------------------------------------------------
-on getSplitsForAccount()
+
+on getSplitsForAccount(username)
+	SafariLib's LoadUrlInFrontWindow("https://myaccount.navient.com/AccountHistory/ViewHistory")
+	
 	tell application "Safari"
-		set doc to front document
-		
-		-- Get all "Transaction History" links, pulled only from the top navigation area
-		set linkScripts to do JavaScript "
-		function returnValue() {
-			var linkSelector = \"a:contains('Transaction history')\";
-			var transactionHistoryLinks = $(linkSelector).filter('[href*=\"TopNav\"]');
-			var linkScripts = [];
-			transactionHistoryLinks.each(function() {
-				var linkScript = $(this).attr('href').replace('javascript:', '');
-				var linkName = linkScript.match(/\\('(\\w+)',/);
-				linkScripts.push({
-					script: linkScript,
-					name: linkName[1]
-				});
-			});
-			
-			console.log(linkScripts);
-			return linkScripts;
-		}
-		
-		returnValue();
-		" in doc
+		set doc to document "Navient | Account History"
 		
 		set theSplits to {}
-		
-		-- Loop through each history, retrieving the payment data
-		repeat with link in linkScripts
-			set doc to front document
-			set split to {accountName:link's |name|, split:my getSplitForPage(link's |script|, doc)}
-			copy split to the end of theSplits
-		end repeat
-		
-		return theSplits
-	end tell
-end getSplitsForAccount
-
-on getSplitForPage(linkScript, doc)
-	tell application "Safari"
-		do JavaScript "eval(\"" & linkScript & "\")" in doc
-		delay 3
-		
-		SafariLib's WaitForFrontWindowToLoad()
-		set doc to document "Sallie Mae - Financial Transaction History"
 		
 		set payments to do JavaScript "
 			function returnValue() {
 				payments = [];
 				
-				$('tr.datagray').add('tr.datawhite').each(function() {
-					console.log($(this));
+				$('tr:has(td[title=\"Payment\"])').each(function() {
+					//console.log($(this));
 					payments.push({
-						date: $(this).find(':nth-child(2)').text(),
-						principal: parseFloat($(this).find(':nth-child(8)').text().replace('$ ', '')),
-						interest: parseFloat ($(this).find(':nth-child(10)').text().replace('$ ', ''))
+						date: $(this).children(':nth-child(1)').text().trim(),
+						principal: parseFloat($(this).children(':nth-child(3)').attr('title')),
+						interest: parseFloat($(this).children(':nth-child(4)').attr('title'))
 					});
 					
 				});
@@ -113,37 +80,37 @@ on getSplitForPage(linkScript, doc)
 			
 			returnValue();
 			" in doc
-		
-		set transactionDate to ""
-		set totalPrincipal to 0
-		set totalInterest to 0
-		
-		repeat with payment in payments
-			if transactionDate is not "" and transactionDate ≠ payment's |date| then exit repeat
-			
-			set transactionDate to payment's |date|
-			
-			-- Quantities are expressed as negative numbers
-			set totalPrincipal to totalPrincipal - (payment's principal)
-			set totalInterest to totalInterest - (payment's interest)
-		end repeat
-		
-		return {|date|:transactionDate, principal:totalPrincipal, interest:totalInterest}
 	end tell
-end getSplitForPage
-
-on logOntoSallieMaeSite(username, |password|)
-	tell application "Safari"
-		-- Load a new window for the Sallie Mae site
-		set loginURL to "https://login.salliemae.com/CALM/calm.do?sourceAppName=SLMACOM"
-		SafariLib's LoadUrlInNewWindow(loginURL)
+	
+	set paymentMonth to null
+	
+	repeat with payment in payments
+		set paymentDate to payment's |date|
+		set currentPaymentMonth to month of date paymentDate
 		
-		-- Get around occasional redirect
-		SafariLib's CloseWindow()
+		if paymentMonth is not null and paymentMonth ≠ currentPaymentMonth then exit repeat
+		
+		set paymentMonth to currentPaymentMonth
+		
+		-- Payments are expressed as negative numbers
+		set totalPrincipal to -1 * (payment's principal)
+		set totalInterest to -1 * (payment's interest)
+		
+		set theSplit to {|date|:paymentDate, principal:totalPrincipal, interest:totalInterest}
+		copy theSplit to the end of theSplits
+	end repeat
+	
+	return theSplits
+	
+end getSplitsForAccount
+
+on logOntoNavientSite(username, |password|)
+	tell application "Safari"
+		-- Load a new window for the Navient site
+		set loginURL to "https://login.navient.com/CALM/calm.do?sourceAppName=NAVCOM"
 		SafariLib's LoadUrlInNewWindow(loginURL)
 		
 		activate
-		delay 2
 		
 		set doc to document "Log into your loan account"
 		
@@ -152,6 +119,8 @@ on logOntoSallieMaeSite(username, |password|)
 		do JavaScript "document.forms['LoginForm']['Password'].value = '" & |password| & "'" in doc
 		do JavaScript "document.forms['LoginForm'].submit()" in doc
 		
-		SafariLib's WaitForFrontWindowToLoadIgnoringUrlContainingString(loginURL, "loanSummary")
+		delay 2
+		
+		SafariLib's WaitForFrontWindowToLoadIgnoringUrlContainingString(loginURL, "AccountSummary")
 	end tell
-end logOntoSallieMaeSite
+end logOntoNavientSite
