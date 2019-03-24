@@ -95,7 +95,9 @@ on getSplitsForAccount(username)
 		"2681 Signature Student", ¬
 		"2715 Signature Student", ¬
 		"2699 Signature Student", ¬
-		"2707 Signature Student"}
+		"2707 Signature Student", ¬
+		"1-01 Stafford - Unsubsidized", ¬
+		"1-02 Stafford - Subsidized"}
 	set summedPaymentDate to null
 	set summedPaymentPrincipal to 0.0
 	set summedPaymentInterest to 0.0
